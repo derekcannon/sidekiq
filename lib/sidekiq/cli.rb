@@ -382,7 +382,8 @@ module Sidekiq
     def parse_config(path)
       erb = ERB.new(File.read(path))
       erb.filename = File.expand_path(path)
-      opts = YAML.load(erb.result) || {}
+      yml_opts = Gem::Version.new(Psych::VERSION) >= Gem::Version.new('4') ? { aliases: true } : {}
+      opts = YAML.load(erb.result, **yml_opts) || {}
 
       if opts.respond_to? :deep_symbolize_keys!
         opts.deep_symbolize_keys!
