@@ -411,7 +411,8 @@ module Sidekiq
     end
 
     def parse_config(path)
-      opts = YAML.load(ERB.new(File.read(path)).result) || {}
+      yml_opts = Gem::Version.new(Psych::VERSION) >= Gem::Version.new('4') ? { aliases: true } : {}
+      opts = YAML.load(ERB.new(File.read(path)).result, **yml_opts) || {}
 
       if opts.respond_to? :deep_symbolize_keys!
         opts.deep_symbolize_keys!
